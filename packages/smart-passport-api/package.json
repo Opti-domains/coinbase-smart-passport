@@ -16,6 +16,7 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.12.1",
     "express": "^4.19.2",
+    "graphql-request": "^6.1.0",
     "sqlite3": "^5.1.7",
     "viem": "^2.10.5"
   },
