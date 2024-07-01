@@ -109,7 +109,7 @@ function CoinbaseVerificationButtonUnstyled(props: any) {
       //   }
       // );
 
-      // await attest('cbkyc', walletAddress)
+      await attest('cbkyc', walletAddress)
 
       // Get coinbase verification
       try {

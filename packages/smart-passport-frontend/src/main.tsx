@@ -40,13 +40,14 @@ import ExplorerPage from "./pages/explorer.tsx";
 import { coinbaseWallet } from "wagmi/connectors";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import { SmartPassportProvider } from "./components/providers/smart-passport.tsx";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
 
 export const config = createConfig({
   chains: [baseSepolia],
   connectors: [
-    coinbaseWallet({ appName: 'Create Wagmi', preference: 'smartWalletOnly' }),
+    coinbaseWallet({ appName: 'Coinbase Smart Passport', preference: 'smartWalletOnly' }),
   ],
   transports: {
     [baseSepolia.id]: http(),
@@ -108,27 +109,29 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         algorithm: theme.darkAlgorithm,
       }}
     >
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-            <AptosProvider>
-              <SuiWalletProvider autoConnect={false}>
-                {/* <SolanaProvider> */}
-                <AntdAlertProvider>
-                  <PrimaryDomainProvider>
-                    <div id="app">
-                      <Elements stripe={stripePromise}>
-                        <RouterProvider router={router} />
-                      </Elements>
-                    </div>
-                  </PrimaryDomainProvider>
-                </AntdAlertProvider>
-                {/* </SolanaProvider> */}
-              </SuiWalletProvider>
-            </AptosProvider>
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+      <SmartPassportProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <AptosProvider>
+                <SuiWalletProvider autoConnect={false}>
+                  {/* <SolanaProvider> */}
+                  <AntdAlertProvider>
+                    <PrimaryDomainProvider>
+                      <div id="app">
+                        <Elements stripe={stripePromise}>
+                          <RouterProvider router={router} />
+                        </Elements>
+                      </div>
+                    </PrimaryDomainProvider>
+                  </AntdAlertProvider>
+                  {/* </SolanaProvider> */}
+                </SuiWalletProvider>
+              </AptosProvider>
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </SmartPassportProvider>
     </ConfigProvider>
   </React.StrictMode>
 );

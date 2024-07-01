@@ -28,6 +28,8 @@ type ActionType =
   | { type: 'SET_COINBASE_VERIFICATION'; address: string; country: string }
 
 function reducer(state: SmartPassportContextType, action: ActionType): SmartPassportContextType {
+  console.log('dispatch', action)
+
   switch (action.type) {
     case 'SET_SIWE_STATUS':
       return { ...state, siweStatus: action.payload };
@@ -36,6 +38,7 @@ function reducer(state: SmartPassportContextType, action: ActionType): SmartPass
     case 'SET_CBID':
       return { ...state, cbid: action.payload };
     case 'SET_GITCOIN_PASSPORT':
+      console.log('passport set')
       return { ...state, gitcoinPassport: action.payload, gitcoinPassportScore: action.score };
     case 'SET_COINBASE_VERIFICATION':
       return { ...state, coinbaseVerification: action.address, coinbaseCountry: action.country };

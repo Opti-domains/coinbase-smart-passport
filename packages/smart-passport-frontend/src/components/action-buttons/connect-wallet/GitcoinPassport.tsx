@@ -109,7 +109,7 @@ function GitcoinPassportButtonUnstyled(props: any) {
       //   }
       // );
 
-      // await attest('gitcoin', walletAddress)
+      await attest('gitcoin', walletAddress)
 
       // Get gitcoin passport score
       try {
