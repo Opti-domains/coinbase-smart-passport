@@ -14,6 +14,7 @@ import { generateSignMessage } from "src/utils/signMessage";
 import styled from "styled-components";
 import { useSocialState } from "src/hooks/useSocialState";
 import { useEASAttest } from "src/hooks/useEASAttest";
+import { useSmartPassport } from "src/components/providers/smart-passport";
 
 const truncateAddress = (address: string | undefined) => {
   if (!address) return;
@@ -31,6 +32,7 @@ function CoinbaseVerificationButtonUnstyled(props: any) {
   const [unlinked, setUnlinked] = useState(false)
 
   const attest = useEASAttest()
+  const [ _, smartDispatch ] = useSmartPassport()
 
   const walletState = !unlinked && state.find(
     (x: ISocialOracleState) =>
@@ -107,18 +109,32 @@ function CoinbaseVerificationButtonUnstyled(props: any) {
       //   }
       // );
 
-      await attest('cbkyc', walletAddress)
+      // await attest('cbkyc', walletAddress)
 
-      dispatch({
-        provider: "wallet:cbkyc",
-        identity: walletAddress,
-        displayName: walletAddress,
-        refUid: import.meta.env.VITE_WALLET_REF_ID,
-        type: "CALLBACK",
-      });
+      // Get coinbase verification
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/coinbase-verification/${walletAddress}`)
 
-      setWalletSelectorModalOpen(false);
-      setUnlinked(false)
+        smartDispatch({
+          type: 'SET_COINBASE_VERIFICATION',
+          address: walletAddress,
+          country: response.data.country,
+        })
+  
+        dispatch({
+          provider: "wallet:cbkyc",
+          identity: walletAddress,
+          displayName: walletAddress,
+          refUid: import.meta.env.VITE_WALLET_REF_ID,
+          type: "CALLBACK",
+        });
+
+        setWalletSelectorModalOpen(false);
+        setUnlinked(false)
+      } catch (err) {
+        console.error(err)
+        window.alert('This wallet is not verified with Coinbase Verification!')
+      }
     } catch (error: any) {
       console.log("error", error);
       message.error("Sign message failed!");

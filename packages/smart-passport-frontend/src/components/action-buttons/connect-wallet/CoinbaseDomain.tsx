@@ -14,6 +14,7 @@ import { generateSignMessage } from "src/utils/signMessage";
 import styled from "styled-components";
 import { useSocialState } from "src/hooks/useSocialState";
 import { useEASAttest } from "src/hooks/useEASAttest";
+import { useSmartPassport } from "src/components/providers/smart-passport";
 
 const truncateAddress = (address: string | undefined) => {
   if (!address) return;
@@ -31,6 +32,7 @@ function CoinbaseDomainButtonUnstyled(props: any) {
   const [unlinked, setUnlinked] = useState(false)
 
   const attest = useEASAttest()
+  const [ _, smartDispatch ] = useSmartPassport()
 
   const walletState = !unlinked && state.find(
     (x: ISocialOracleState) =>
@@ -108,6 +110,11 @@ function CoinbaseDomainButtonUnstyled(props: any) {
       // );
 
       await attest('cbid', walletAddress)
+
+      smartDispatch({
+        type: 'SET_CBID',
+        payload: walletAddress,
+      })
 
       dispatch({
         provider: "wallet:cbid",

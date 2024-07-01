@@ -14,6 +14,7 @@ import { generateSignMessage } from "src/utils/signMessage";
 import styled from "styled-components";
 import { useSocialState } from "src/hooks/useSocialState";
 import { useEASAttest } from "src/hooks/useEASAttest";
+import { useSmartPassport } from "src/components/providers/smart-passport";
 
 const truncateAddress = (address: string | undefined) => {
   if (!address) return;
@@ -31,6 +32,7 @@ function GitcoinPassportButtonUnstyled(props: any) {
   const [unlinked, setUnlinked] = useState(false)
 
   const attest = useEASAttest()
+  const [ _, smartDispatch ] = useSmartPassport()
 
   const walletState = !unlinked && state.find(
     (x: ISocialOracleState) =>
@@ -107,18 +109,36 @@ function GitcoinPassportButtonUnstyled(props: any) {
       //   }
       // );
 
-      await attest('gitcoin', walletAddress)
+      // await attest('gitcoin', walletAddress)
 
-      dispatch({
-        provider: "wallet:gitcoin",
-        identity: walletAddress,
-        displayName: walletAddress,
-        refUid: import.meta.env.VITE_WALLET_REF_ID,
-        type: "CALLBACK",
-      });
+      // Get gitcoin passport score
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/gitcoin-score/${walletAddress}`)
 
-      setWalletSelectorModalOpen(false);
-      setUnlinked(false)
+        if (!response.data || !parseFloat(response.data.score) || parseFloat(response.data.score) < 0.1) {
+          throw new Error('Gitcoin Passport score not found')
+        }
+
+        smartDispatch({
+          type: 'SET_GITCOIN_PASSPORT',
+          payload: walletAddress,
+          score: parseFloat(response.data.score),
+        })
+  
+        dispatch({
+          provider: "wallet:gitcoin",
+          identity: walletAddress,
+          displayName: walletAddress,
+          refUid: import.meta.env.VITE_WALLET_REF_ID,
+          type: "CALLBACK",
+        });
+
+        setWalletSelectorModalOpen(false);
+        setUnlinked(false)
+      } catch (err) {
+        console.error(err)
+        window.alert('Gitcoin Passport score not found for this wallet!')
+      }
     } catch (error: any) {
       console.log("error", error);
       message.error("Sign message failed!");

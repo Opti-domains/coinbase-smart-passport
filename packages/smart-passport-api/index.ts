@@ -5,6 +5,11 @@ import express, { Request, Response } from 'express';
 import axios from 'axios';
 import cors from 'cors';
 import { GraphQLClient, gql } from 'graphql-request';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20',
+});
 
 const app = express();
 const port = 8453;
@@ -133,6 +138,36 @@ app.get('/coinbase-verification/:walletAddress', async (req: Request, res: Respo
     res.status(500).json({ error: 'Failed to fetch Coinbase Verification' });
   }
 })
+
+app.post('/create-checkout-session', async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'subscription',
+      line_items: [
+        {
+          price: 'price_1PXannRtrAJfFjPbQAzP7a7n',
+          quantity: 1,
+        },
+      ],
+      success_url: `${req.headers.origin}/subscribe-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/subscribe-cancel`,
+    });
+
+    res.json({ sessionId: session.id });
+  } catch (err: any) {
+    console.error(err)
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/subscribe-success', (req, res) => {
+  res.redirect(`${process.env.FRONTEND_URL}?subscribe=1`);
+});
+
+app.get('/subscribe-cancel', (req, res) => {
+  res.redirect(`${process.env.FRONTEND_URL}/cancel`);
+});
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

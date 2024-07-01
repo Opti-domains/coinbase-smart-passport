@@ -5,6 +5,7 @@ interface SmartPassportContextType {
   ens: string;
   cbid: string;
   gitcoinPassport: string;
+  gitcoinPassportScore: number;
   coinbaseVerification: string;
   coinbaseCountry: string;
 }
@@ -14,6 +15,7 @@ const initialState: SmartPassportContextType = {
   ens: '',
   cbid: '',
   gitcoinPassport: '',
+  gitcoinPassportScore: 0,
   coinbaseVerification: '',
   coinbaseCountry: '',
 };
@@ -22,9 +24,8 @@ type ActionType =
   | { type: 'SET_SIWE_STATUS'; payload: string }
   | { type: 'SET_ENS'; payload: string }
   | { type: 'SET_CBID'; payload: string }
-  | { type: 'SET_GITCOIN_PASSPORT'; payload: string }
-  | { type: 'SET_COINBASE_VERIFICATION'; payload: string }
-  | { type: 'SET_COINBASE_COUNTRY'; payload: string };
+  | { type: 'SET_GITCOIN_PASSPORT'; payload: string, score: number }
+  | { type: 'SET_COINBASE_VERIFICATION'; address: string; country: string }
 
 function reducer(state: SmartPassportContextType, action: ActionType): SmartPassportContextType {
   switch (action.type) {
@@ -35,11 +36,9 @@ function reducer(state: SmartPassportContextType, action: ActionType): SmartPass
     case 'SET_CBID':
       return { ...state, cbid: action.payload };
     case 'SET_GITCOIN_PASSPORT':
-      return { ...state, gitcoinPassport: action.payload };
+      return { ...state, gitcoinPassport: action.payload, gitcoinPassportScore: action.score };
     case 'SET_COINBASE_VERIFICATION':
-      return { ...state, coinbaseVerification: action.payload };
-    case 'SET_COINBASE_COUNTRY':
-      return { ...state, coinbaseCountry: action.payload };
+      return { ...state, coinbaseVerification: action.address, coinbaseCountry: action.country };
     default:
       return state;
   }

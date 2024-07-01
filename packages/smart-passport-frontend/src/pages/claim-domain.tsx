@@ -33,6 +33,7 @@ import OPTownAirdropABI from "../abi/OPTownAirdrop.json";
 import OpkitDomainsABI from "../abi/OpkitDomains.json";
 import GitcoinPassport from "src/components/action-buttons/connect-wallet/GitcoinPassport";
 import CoinbaseVerification from "src/components/action-buttons/connect-wallet/CoinbaseVerification";
+import { CardPassport } from "src/components/domain/CardPassport";
 
 const RECORD_MAPPING: {[x: string]: string} = {
   'com.twitter': 'twitter',
@@ -976,14 +977,14 @@ export default function ClaimDomain() {
                           the owner of this account.
                         </h5>
                       </div>
-                      <div className="my-3">
+                      {/* <div className="my-3">
                         <ConnectButton
                           showBalance={{
                             smallScreen: false,
                             largeScreen: true,
                           }}
                         />
-                      </div>
+                      </div> */}
                     </div>
                   )}
 
@@ -1494,6 +1495,8 @@ export default function ClaimDomain() {
                   baseMinted={true}
                   followed={true}
                 /> */}
+
+                <CardPassport></CardPassport>
               </div>
             </div>
           </div>

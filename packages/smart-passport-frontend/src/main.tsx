@@ -38,6 +38,10 @@ import * as Sentry from "@sentry/react";
 import ClaimDomain from "./pages/claim-domain.tsx";
 import ExplorerPage from "./pages/explorer.tsx";
 import { coinbaseWallet } from "wagmi/connectors";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
 
 export const config = createConfig({
   chains: [baseSepolia],
@@ -113,7 +117,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <AntdAlertProvider>
                   <PrimaryDomainProvider>
                     <div id="app">
-                      <RouterProvider router={router} />
+                      <Elements stripe={stripePromise}>
+                        <RouterProvider router={router} />
+                      </Elements>
                     </div>
                   </PrimaryDomainProvider>
                 </AntdAlertProvider>
